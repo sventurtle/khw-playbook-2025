@@ -65,7 +65,8 @@
     locality_name: Moscow
     organization_name: sventurtle
     organizational_unit_name: kube
-    common_name: "{{ item['component'] }}"
+    common_name: service-accounts
+    subject_alt_name: 'DNS:kube01,IP:127.0.0.1'
     basic_constraints:
       - CA:FALSE
     basic_constraints_critical: True

@@ -52,3 +52,67 @@
 - name: use context for kube-scheduler
   shell: kubectl config use-context default --kubeconfig={{ KUBE_CONFIG_DIR }}kube-scheduler.kubeconfig
 
+- name: generate encryption key
+  command: 'bash -c "head -c 32 /dev/urandom | base64"'
+  register: KUBE_ENCRYPTION_KEY
+
+- name: template data encryption config
+  template:
+    src: encryption-config.yaml.j2
+    dest: /etc/kubernetes/config/encryption-config.yaml
+
+- name: template kube-apiserver-to-kubelet yaml
+  template:
+    src: kube-apiserver-to-kubelet.yaml.j2
+    dest: /etc/kubernetes/config/kube-apiserver-to-kubelet.yaml
+
+- name: template kube-scheduler config
+  template:
+    src: kube-scheduler.yaml.j2
+    dest: /etc/kubernetes/config/kube-scheduler.yaml
+
+- name: template kube-apiserver systemd unit
+  template:
+    src: kube-apiserver.service.j2
+    dest: /etc/systemd/system/kube-apiserver.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: template kube-controller-manager systemd unit
+  template:
+    src: kube-controller-manager.service.j2
+    dest: /etc/systemd/system/kube-controller-manager.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: template kube-scheduler systemd unit
+  template:
+    src: kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: start kube-apiserver
+  systemd:
+    name: kube-apiserver.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: start kube-controller-manager
+  systemd:
+    name: kube-controller-manager.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: start kube-scheduler
+  systemd:
+    name: kube-scheduler.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
