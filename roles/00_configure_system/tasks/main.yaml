@@ -1,0 +1,21 @@
+- name: install packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - wget
+    - curl
+    - openssl
+    - socat
+    - conntrack
+    - ipset
+    - kmod
+
+- name: disable swap
+  shell: swapoff -a
+
+- name: load br-netfilter module
+  shell: modprobe br-netfilter
+
+

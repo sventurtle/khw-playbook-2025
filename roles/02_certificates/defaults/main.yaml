@@ -1,0 +1,9 @@
+PKI_DIR: /etc/kubernetes/pki
+
+CERTS:
+  - { "component": "admin" }
+  - { "component": "kube-proxy" }
+  - { "component": "kube-scheduler" }
+  - { "component": "kube-controller-manager" }
+  - { "component": "kube-api-server" }
+  - { "component": "service-accounts" }

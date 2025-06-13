@@ -1,5 +1,5 @@
 - name: etcd
   ansible.builtin.unarchive:
     src: https://github.com/etcd-io/etcd/releases/download/{{ ETCD_VERSION }}/etcd-{{ ETCD_VERSION }}-{{ BIN_ARCH }}.tar.gz
-    dest: /usr/local/bin/
+    dest: /tmp/
     remote_src: yes

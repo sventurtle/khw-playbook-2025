@@ -1,0 +1,92 @@
+- name: create kubernets pki directory
+  file:
+    path: /etc/kubernetes/pki
+    state: directory
+    mode: 0755
+
+#- name: create directory for CA
+#  file:
+#    path: "{{ PKI_DIR }}/ca/"
+#    state: directory
+#    mode: 0755
+
+- name: generate a private key
+  openssl_privatekey:
+    path: "{{ PKI_DIR }}/ca-key.pem"
+    size: 4096
+    type: "RSA"
+    force: no
+
+- name: generate ca certificate request
+  openssl_csr:
+    path: "{{ PKI_DIR }}/ca-csr.pem"
+    privatekey_path: "{{ PKI_DIR }}/ca-key.pem"
+    force: no
+    digest: sha512
+    country_name: RU
+    locality_name: Moscow
+    state_or_province_name: Moscow
+    organization_name: sventurtle
+    organizational_unit_name: kube
+    email_address: sventurtle@gmail.com
+    basic_constraints:
+      - CA:TRUE
+      - pathlen:2
+    basic_constraints_critical: True
+    key_usage:
+      - 'Certificate Sign'
+      - 'CRL Sign'
+    key_usage_critical: True
+
+- name: generate certificate signed with CA
+  openssl_certificate:
+    path: "{{ PKI_DIR }}/ca.pem"
+    csr_path: "{{ PKI_DIR }}/ca-csr.pem"
+    privatekey_path: "{{ PKI_DIR }}/ca-key.pem"
+    provider: selfsigned
+    force: no
+
+- name: generate private keys for kube
+  openssl_privatekey:
+    path: "{{ PKI_DIR }}/{{ item['component'] }}-key.pem"
+    size: "4096"
+    type: "RSA"
+    force: no
+  loop: "{{ CERTS }}"
+
+- name: generate certificate requests for kubernetes components
+  openssl_csr:
+    path: "{{ PKI_DIR }}/{{ item['component'] }}-csr.pem"
+    privatekey_path: "{{ PKI_DIR }}/{{ item['component'] }}-key.pem"
+    force: no
+    digest: sha512
+    country_name: RU
+    state_or_province_name: Moscow
+    locality_name: Moscow
+    organization_name: sventurtle
+    organizational_unit_name: kube
+    common_name: "{{ item['component'] }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: True
+    key_usage:
+      - 'Digital Signature'
+      - 'Key Encipherment'
+    key_usage_critical: True
+    extended_key_usage:
+      - 'TLS Web Server Authentication'
+      - 'TLS Web Client Authentication'
+    extended_key_usage_critical: True
+  loop: "{{ CERTS }}"
+
+- name: generate kubernetes certificates
+  openssl_certificate:
+    path: "{{ PKI_DIR }}/{{ item['component'] }}.pem"
+    csr_path: "{{ PKI_DIR }}/{{ item['component'] }}-csr.pem"
+    privatekey_path: "{{ PKI_DIR }}/{{ item['component'] }}-key.pem"
+    ownca_path: "{{ PKI_DIR }}/ca.pem"
+    ownca_privatekey_path: "{{ PKI_DIR }}/ca-key.pem"
+    provider: ownca
+    force: no
+    ownca_not_after: "+365d"
+  loop: "{{ CERTS }}"
