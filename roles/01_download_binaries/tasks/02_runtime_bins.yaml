@@ -17,7 +17,7 @@
 - name: cni-plugins
   ansible.builtin.unarchive:
     src: https://github.com/containernetworking/plugins/releases/download/{{ CNI_PLUGINS_VERSION }}/cni-plugins-{{ BIN_ARCH }}-{{ CNI_PLUGINS_VERSION }}.tgz
-    dest: /etc/cni-plugins/
+    dest: /opt/cni/bin/
     remote_src: yes
 
 - name: containerd

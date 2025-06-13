@@ -1,0 +1,39 @@
+- name: etcd
+  ansible.builtin.unarchive:
+    src: https://github.com/etcd-io/etcd/releases/download/{{ ETCD_VERSION }}/etcd-{{ ETCD_VERSION }}-{{ BIN_ARCH }}.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: create etcd data dir
+  file:
+    path: /var/lib/etcd
+    state: directory
+    mode: 0700
+
+- name: copy etcd binaries
+  ansible.builtin.copy:
+    src: /tmp/etcd-{{ ETCD_VERSION }}-{{ BIN_ARCH }}/{{ item['bin'] }}
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0755'
+  loop: "{{ ETCD_BINS }}"
+
+- name: remove etcd directory in tmp
+  ansible.builtin.file:
+    path: /tmp/etcd-{{ ETCD_VERSION }}-{{ BIN_ARCH }}
+    state: absent
+
+- name: template etcd systemd service
+  template:
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: start etcd service
+  systemd:
+    name: etcd.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes

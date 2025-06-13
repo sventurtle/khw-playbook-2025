@@ -1,0 +1,7 @@
+PKI_DIR: /etc/kubernetes/pki
+ETCD_ADDR: 127.0.0.1
+
+ETCD_BINS:
+  - { "bin": "etcd" }
+  - { "bin": "etcdctl" }
+  - { "bin": "etcdutl" }

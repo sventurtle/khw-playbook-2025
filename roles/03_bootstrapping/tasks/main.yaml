@@ -1,0 +1,10 @@
+- name: bootstrap etcd
+  include: 01_bootstrap_etcd.yaml
+
+- name: bootstrap controllers
+  include: 02_bootstrap_controllers.yaml
+
+- name: bootstrap workers
+  include: 03_bootstrap_workers.yaml
+
+

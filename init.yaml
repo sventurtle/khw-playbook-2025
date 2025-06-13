@@ -3,4 +3,5 @@
   roles:
 #    - 00_configure_system
 #    - 01_download_binaries
-    - 02_certificates
+#    - 02_certificates
+    - 03_bootstrapping
