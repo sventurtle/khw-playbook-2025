@@ -1,0 +1,8 @@
+- name: Download kubernetes binaries
+  include: 01_kube_bins.yaml
+
+- name: Download runtime binaries
+  include: 02_runtime_bins.yaml
+
+- name: Download etcd binary
+  include: 03_etcd_bin.yaml

@@ -1,0 +1,2 @@
+kube01 ansible_user=root ansible_host=192.168.88.27 ansible_port=22 
+#KHW_NET_CIDR=10.150.71.0 KHW_NET_CIDR_MASK=24

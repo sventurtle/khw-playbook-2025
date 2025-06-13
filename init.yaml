@@ -1,0 +1,4 @@
+- hosts: all
+  become: true
+  roles:
+    - 01_download_binaries
