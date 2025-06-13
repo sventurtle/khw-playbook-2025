@@ -1,0 +1,34 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-apiserver \
+  --allow-privileged=true \
+  --audit-log-maxage=30 \
+  --audit-log-maxbackup=3 \
+  --audit-log-maxsize=100 \
+  --audit-log-path=/var/log/audit.log \
+  --authorization-mode=Node,RBAC \
+  --bind-address=0.0.0.0 \
+  --client-ca-file={{ PKI_DIR }}ca.pem \
+  --enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \
+  --etcd-servers=http://{{ ETCD_ADDR }}:2379 \
+  --event-ttl=1h \
+  --encryption-provider-config={{ KUBE_CONFIG_DIR }}encryption-config.yaml \
+  --kubelet-certificate-authority={{ PKI_DIR }}ca.pem \
+  --kubelet-client-certificate={{ PKI_DIR }}kube-api-server.pem \
+  --kubelet-client-key={{ PKI_DIR }}kube-api-server-key.pem \
+  --runtime-config='api/all=true' \
+  --service-account-key-file={{ PKI_DIR }}service-accounts.pem \
+  --service-account-signing-key-file={{ PKI_DIR }}service-accounts-key.pem \
+  --service-account-issuer=https://{{ KUBE_CLUSTER_PUBLIC_API_DOMAIN }}:{{ KUBE_CLUSTER_PUBLIC_API_PORT }} \
+  --service-node-port-range=30000-32767 \
+  --tls-cert-file={{ PKI_DIR }}kube-api-server.pem \
+  --tls-private-key-file={{ PKI_DIR }}kube-api-server-key.pem \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

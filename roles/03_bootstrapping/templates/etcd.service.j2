@@ -6,14 +6,14 @@ Documentation=https://github.com/etcd-io/etcd
 Type=notify
 ExecStart=/usr/local/bin/etcd \
   --name {{ inventory_hostname }} \
-  --cert-file={{ PKI_DIR }}/kube-api-server.pem \
-  --key-file={{ PKI_DIR }}/kube-api-server-key.pem \
-  --trusted-ca-file={{ PKI_DIR }}/ca.pem \
-  --peer-trusted-ca-file={{ PKI_DIR }}/ca.pem \
-  --peer-cert-file={{ PKI_DIR }}/kube-api-server.pem \
-  --peer-key-file={{ PKI_DIR }}/kube-api-server-key.pem \
+  --cert-file={{ PKI_DIR }}kube-api-server.pem \
+  --key-file={{ PKI_DIR }}kube-api-server-key.pem \
+  --trusted-ca-file={{ PKI_DIR }}ca.pem \
+  --peer-trusted-ca-file={{ PKI_DIR }}ca.pem \
+  --peer-cert-file={{ PKI_DIR }}kube-api-server.pem \
+  --peer-key-file={{ PKI_DIR }}kube-api-server-key.pem \
   --peer-client-cert-auth=true \
-  --peer-trusted-ca-file={{ PKI_DIR }}/ca.pem \
+  --peer-trusted-ca-file={{ PKI_DIR }}ca.pem \
   --initial-advertise-peer-urls https://{{ ETCD_ADDR }}:2380 \
   --listen-peer-urls https://{{ ETCD_ADDR }}:2380 \
   --listen-client-urls https://{{ ETCD_ADDR }}:2379 \

@@ -1,0 +1,54 @@
+- name: create the kubernetes config directory
+  file:
+    path: /etc/kubernetes/config
+    state: directory
+    mode: 0755
+
+- name: generate admin kubeconfig
+  shell: kubectl config set-cluster {{ KUBE_CLUSTER_NAME }} --certificate-authority={{ PKI_DIR }}ca.pem --embed-certs=true  --server=https://127.0.0.1:6443  --kubeconfig={{ KUBE_CONFIG_DIR }}admin.kubeconfig
+
+- name: set credentials for admin
+  shell: kubectl config set-credentials admin --client-certificate={{ PKI_DIR }}admin.pem --client-key={{ PKI_DIR }}admin-key.pem --embed-certs=true --kubeconfig={{ KUBE_CONFIG_DIR }}admin.kubeconfig
+
+- name: set default context for admin
+  shell: kubectl config set-context default --cluster={{ KUBE_CLUSTER_NAME }} --user=admin --kubeconfig={{ KUBE_CONFIG_DIR }}admin.kubeconfig
+
+- name: use context for admin
+  shell: kubectl config use-context default --kubeconfig={{ KUBE_CONFIG_DIR }}admin.kubeconfig
+
+- name: generate kube-proxy kubeconfig
+  shell: kubectl config set-cluster {{ KUBE_CLUSTER_NAME }} --certificate-authority={{ PKI_DIR }}ca.pem --embed-certs=true --server=https://{{ KUBE_CLUSTER_PUBLIC_API_DOMAIN }}:{{ KUBE_CLUSTER_PUBLIC_API_PORT }} --kubeconfig={{ KUBE_CONFIG_DIR }}kube-proxy.kubeconfig
+
+- name: set credentials for kube-proxy
+  shell: kubectl config set-credentials system:kube-proxy --client-certificate={{ PKI_DIR }}kube-proxy.pem --client-key={{ PKI_DIR }}kube-proxy-key.pem --embed-certs=true --kubeconfig={{ KUBE_CONFIG_DIR }}kube-proxy.kubeconfig
+
+- name: set default context for kube-proxy
+  shell: kubectl config set-context default --cluster={{ KUBE_CLUSTER_NAME }} --user=system:kube-proxy --kubeconfig={{ KUBE_CONFIG_DIR }}kube-proxy.kubeconfig
+
+- name: use default context for kube-proxy
+  shell: kubectl config use-context default --kubeconfig={{ KUBE_CONFIG_DIR }}kube-proxy.kubeconfig
+
+- name: generate kube-controller-manager kubeconfig
+  shell: kubectl config set-cluster {{ KUBE_CLUSTER_NAME }} --certificate-authority={{ PKI_DIR }}ca.pem --embed-certs=true --server=https://{{ KUBE_CLUSTER_PUBLIC_API_DOMAIN }}:{{ KUBE_CLUSTER_PUBLIC_API_PORT }} --kubeconfig={{ KUBE_CONFIG_DIR }}kube-controller-manager.kubeconfig
+
+- name: set credentials for kube-controller-manager
+  shell: kubectl config set-credentials system:kube-controller-manager --client-certificate={{ PKI_DIR }}kube-controller-manager.pem --client-key={{ PKI_DIR }}kube-controller-manager-key.pem --embed-certs=true --kubeconfig={{ KUBE_CONFIG_DIR }}kube-controller-manager.kubeconfig
+
+- name: set default context for kube-controller-manager
+  shell: kubectl config set-context default --cluster={{ KUBE_CLUSTER_NAME }} --user=system:kube-controller-manager --kubeconfig={{ KUBE_CONFIG_DIR }}kube-controller-manager.kubeconfig
+
+- name: use default context for kube-controller-manager
+  shell: kubectl config use-context default --kubeconfig={{ KUBE_CONFIG_DIR }}kube-controller-manager.kubeconfig
+
+- name: generate kube-scheduler kubeconfig
+  shell: kubectl config set-cluster {{ KUBE_CLUSTER_NAME }} --certificate-authority={{ PKI_DIR }}ca.pem --embed-certs=true --server=https://{{ KUBE_CLUSTER_PUBLIC_API_DOMAIN }}:{{ KUBE_CLUSTER_PUBLIC_API_PORT }} --kubeconfig={{ KUBE_CONFIG_DIR }}kube-scheduler.kubeconfig
+
+- name: set credentials for kube-scheduler
+  shell: kubectl config set-credentials system:kube-scheduler --client-certificate={{ PKI_DIR }}kube-scheduler.pem --client-key={{ PKI_DIR }}kube-scheduler-key.pem --embed-certs=true --kubeconfig={{ KUBE_CONFIG_DIR }}kube-scheduler.kubeconfig
+
+- name: set context for kube-scheduler
+  shell: kubectl config set-context default --cluster={{ KUBE_CLUSTER_NAME }} --user=system:kube-scheduler --kubeconfig={{ KUBE_CONFIG_DIR }}kube-scheduler.kubeconfig
+
+- name: use context for kube-scheduler
+  shell: kubectl config use-context default --kubeconfig={{ KUBE_CONFIG_DIR }}kube-scheduler.kubeconfig
+

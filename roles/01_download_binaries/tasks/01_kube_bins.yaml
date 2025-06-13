@@ -2,28 +2,34 @@
   get_url:
     url: https://dl.k8s.io/{{ KUBE_VERSION }}/bin/{{ KUBE_ARCH }}/kubectl
     dest: /usr/local/bin/
+    mode: 0755
 
 - name: kube-apiserver
   get_url:
     url: https://dl.k8s.io/{{ KUBE_VERSION }}/bin/{{ KUBE_ARCH }}/kube-apiserver
     dest: /usr/local/bin/
+    mode: 0755
 
 - name: kube-controller-manager
   get_url:
     url: https://dl.k8s.io/{{ KUBE_VERSION }}/bin/{{ KUBE_ARCH }}/kube-controller-manager
     dest: /usr/local/bin/
+    mode: 0755
 
 - name: kube-scheduler
   get_url:
     url: https://dl.k8s.io/{{ KUBE_VERSION }}/bin/{{ KUBE_ARCH }}/kube-scheduler
     dest: /usr/local/bin/
+    mode: 0755
 
 - name: kube-proxy
   get_url:
     url: https://dl.k8s.io/{{ KUBE_VERSION }}/bin/{{ KUBE_ARCH }}/kube-proxy
     dest: /usr/local/bin/
+    mode: 0755
 
 - name: kubelet
   get_url:
     url: https://dl.k8s.io/{{ KUBE_VERSION }}/bin/{{ KUBE_ARCH }}/kubelet
     dest: /usr/local/bin/
+    mode: 0755
