@@ -4,12 +4,6 @@
     state: directory
     mode: 0755
 
-#- name: create directory for CA
-#  file:
-#    path: "{{ PKI_DIR }}/ca/"
-#    state: directory
-#    mode: 0755
-
 - name: generate a private key
   openssl_privatekey:
     path: "{{ PKI_DIR }}/ca-key.pem"
@@ -27,7 +21,7 @@
     locality_name: Moscow
     state_or_province_name: Moscow
     organization_name: sventurtle
-    organizational_unit_name: kube
+    organizational_unit_name: kube01
     email_address: sventurtle@gmail.com
     basic_constraints:
       - CA:TRUE
@@ -63,10 +57,10 @@
     country_name: RU
     state_or_province_name: Moscow
     locality_name: Moscow
-    organization_name: sventurtle
-    organizational_unit_name: kube
-    common_name: service-accounts
-    subject_alt_name: 'DNS:kube01,IP:127.0.0.1'
+    organization_name: "{{ item['O'] }}"
+    organizational_unit_name: "{{ item['OU'] }}"
+    common_name: "{{ item['CN'] }}"
+    subject_alt_name: "{{ item['SAN'] }}"
     basic_constraints:
       - CA:FALSE
     basic_constraints_critical: True

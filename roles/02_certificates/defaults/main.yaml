@@ -1,9 +1,11 @@
 PKI_DIR: /etc/kubernetes/pki
 
 CERTS:
-  - { "component": "admin" }
-  - { "component": "kube-proxy" }
-  - { "component": "kube-scheduler" }
-  - { "component": "kube-controller-manager" }
-  - { "component": "kube-api-server" }
-  - { "component": "service-accounts" }
+  - { "component": "admin", "O": "system:masters", "OU": "kubernetes", "CN": "admin", "SAN": "IP:127.0.0.1,IP:0.0.0.0,DNS:kube01"}
+  - { "component": "kube-proxy", "O": "system:node-proxier", "OU": "kubernetes", "CN": "system:kube-proxy", "SAN": "IP:127.0.0.1,IP:0.0.0.0,DNS:kube-proxy" }
+  - { "component": "kube-scheduler", "O": "system:system:kube-scheduler", "OU": "kubernetes", "CN": "system:kube-scheduler", "SAN": "IP:127.0.0.1,IP:0.0.0.0,DNS:kube-scheduler" }
+  - { "component": "kube-controller-manager", "O": "system:kube-controller-manager", "OU": "kubernetes", "CN": "system:kube-controller-manager", "SAN": "IP:127.0.0.1,IP:0.0.0.0,DNS:kube-controller-manager" }
+  - { "component": "kube-api-server", "O": "kubernetes", "CN": "kubernetes", "OU": "kubernetes", "SAN": "IP:127.0.0.1,IP:10.32.0.1,DNS:kube01" }
+  - { "component": "kubelet", "O": "kubelet", "CN": "kubelet", "OU": "kubernetes", "SAN": "IP:127.0.0.1,IP:0.0.0.0,DNS:kube01" }
+  - { "component": "service-accounts", "O": "service-accounts", "CN": "service-accounts", "OU": "kubernetes", "SAN": "IP:127.0.0.1,IP:0.0.0.0,DNS:kube01" }
+  - { "component": "kube01", "O": "system:nodes", "OU": "kubernetes", "CN": "system:node:kube01", "SAN": "IP:127.0.0.1,IP:0.0.0.0,DNS:kube01" }

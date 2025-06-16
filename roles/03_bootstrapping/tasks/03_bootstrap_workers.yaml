@@ -1,0 +1,139 @@
+- name: set configs for worker node
+  shell: kubectl config set-cluster {{ KUBE_CLUSTER_NAME }} --certificate-authority={{ PKI_DIR }}ca.pem  --embed-certs=true  --server=https://{{ KUBE_CLUSTER_PUBLIC_API_DOMAIN }}:{{ KUBE_CLUSTER_PUBLIC_API_PORT }}  --kubeconfig={{ KUBE_CONFIG_DIR }}{{ WORKER_NODE_NAME }}.kubeconfig
+
+- name: set config credentials for worker node
+  shell:  kubectl config set-credentials system:node:{{ WORKER_NODE_NAME }} --client-certificate={{ PKI_DIR }}{{ WORKER_NODE_NAME }}.pem --client-key={{ PKI_DIR}}{{ WORKER_NODE_NAME }}-key.pem --embed-certs=true --kubeconfig={{ KUBE_CONFIG_DIR }}{{ WORKER_NODE_NAME }}.kubeconfig
+
+- name: set default context for worker node
+  shell: kubectl config set-context default --cluster={{ KUBE_CLUSTER_NAME }} --user=system:node:{{ WORKER_NODE_NAME }}  --kubeconfig={{ KUBE_CONFIG_DIR }}{{ WORKER_NODE_NAME }}.kubeconfig
+
+- name: use default context for worker node
+  shell: kubectl config use-context default --kubeconfig={{ KUBE_CONFIG_DIR }}{{ WORKER_NODE_NAME }}.kubeconfig
+
+- name: configure networking; template bridge config
+  template:
+    src: 10-bridge.conf.j2
+    dest: /etc/cni/net.d/
+    mode: 0755
+
+- name: configure networking; template loopback config
+  template:
+    src: 99-loopback.conf.j2
+    dest: /etc/cni/net.d/
+    mode: 0755
+
+- name: enable ipv4 package crossing
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: enable ipv6 package crossing
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: create containerd config dir
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: 0700
+
+- name: template containerd config
+  template:
+    src: containerd-config.toml.j2
+    dest: /etc/containerd/config.toml
+    mode: 0755
+
+- name: template containerd systemd unit
+  template:
+    src: containerd.service.j2
+    dest: /etc/systemd/system/containerd.service
+    mode: 0644
+
+- name: move containerd binary
+  ansible.builtin.copy:
+    src: /tmp/bin/{{ item['bin'] }}
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0755'
+  loop: "{{ CONTAINERD_BINS }}"
+
+- name: remove containerd directory in tmp
+  ansible.builtin.file:
+    path: /tmp/bin
+    state: absent
+
+- name: move crictl binary
+  ansible.builtin.copy:
+    src: /tmp/crictl
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0755'
+
+- name: remove crictl in tmp
+  ansible.builtin.file:
+    path: /tmp/crictl
+    state: absent
+
+- name: move runc binary
+  ansible.builtin.copy:
+    src: /tmp/runc
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0755'
+
+- name: remove containerd directory in tmp
+  ansible.builtin.file:
+    path: /tmp/runc
+    state: absent
+
+- name: template kubelet config
+  template:
+    src: kubelet-config.yaml.j2
+    dest: /etc/kubernetes/config/kubelet-config.yaml
+    mode: 0755
+
+- name: template kubelet systemd unit
+  template:
+    src: kubelet.service.j2
+    dest: /etc/systemd/system/kubelet.service
+    mode: 0644
+
+- name: template kube-proxy config
+  template:
+    src: kube-proxy-config.yaml.j2
+    dest: /etc/kubernetes/config/kube-proxy-config.yaml
+    mode: 0755
+
+- name: template kube-proxy systemd unit
+  template:
+    src: kube-proxy.service.j2
+    dest: /etc/systemd/system/kube-proxy.service
+    mode: 0644
+
+- name: start containerd
+  systemd:
+    name: containerd.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: start kubelet
+  systemd:
+    name: kubelet.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: start kube-proxy
+  systemd:
+    name: kube-proxy.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes

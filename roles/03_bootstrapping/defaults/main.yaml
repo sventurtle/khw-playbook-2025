@@ -9,8 +9,15 @@ KUBE_CLUSTER_CIDR: 10.110.0.0
 KUBE_CLUSTER_CIDR_NETMASK: 16
 KUBE_CLUSTER_SERVICE_NETWORK: 10.200.0.0
 KUBE_CLUSTER_SERVICE_NETWORK_NETMASK: 24
+WORKER_NODE_NAME: kube01
 
 ETCD_BINS:
   - { "bin": "etcd" }
   - { "bin": "etcdctl" }
   - { "bin": "etcdutl" }
+
+CONTAINERD_BINS:
+  - { "bin": "containerd" }
+  - { "bin": "containerd-shim-runc-v2" }
+  - { "bin": "containerd-stress" }
+  - { "bin": "ctr" }

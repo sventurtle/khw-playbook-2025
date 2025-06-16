@@ -7,7 +7,7 @@ Requires=containerd.service
 [Service]
 ExecStart=/usr/local/bin/kubelet \
   --config={{ KUBE_CONFIG_DIR }}kubelet-config.yaml \
-  --kubeconfig={{ KUBE_CONFIG_DIR }}kubelet.kubeconfig \
+  --kubeconfig={{ KUBE_CONFIG_DIR }}{{ WORKER_NODE_NAME }}.kubeconfig \
   --v=2
 Restart=on-failure
 RestartSec=5
