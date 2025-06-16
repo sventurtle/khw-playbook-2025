@@ -16,6 +16,19 @@
 - name: use context for admin
   shell: kubectl config use-context default --kubeconfig={{ KUBE_CONFIG_DIR }}admin.kubeconfig
 
+- name: create admin kubeconfig directory in root
+  file:
+    path: /root/.kube/
+    state: directory
+    mode: 0755
+
+- name: copy admin kubeconfig in root
+  ansible.builtin.copy:
+    src: "{{ KUBE_CONFIG_DIR }}admin.kubeconfig"
+    dest: /root/.kube/config
+    remote_src: yes
+    mode: 0755
+
 - name: generate kube-proxy kubeconfig
   shell: kubectl config set-cluster {{ KUBE_CLUSTER_NAME }} --certificate-authority={{ PKI_DIR }}ca.pem --embed-certs=true --server=https://{{ KUBE_CLUSTER_PUBLIC_API_DOMAIN }}:{{ KUBE_CLUSTER_PUBLIC_API_PORT }} --kubeconfig={{ KUBE_CONFIG_DIR }}kube-proxy.kubeconfig
 

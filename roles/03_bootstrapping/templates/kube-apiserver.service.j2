@@ -26,6 +26,7 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --service-account-key-file={{ PKI_DIR }}service-accounts.pem \
   --service-account-signing-key-file={{ PKI_DIR }}service-accounts-key.pem \
   --service-account-issuer=https://{{ KUBE_CLUSTER_PUBLIC_API_DOMAIN }}:{{ KUBE_CLUSTER_PUBLIC_API_PORT }} \
+  --service-cluster-ip-range={{ KUBE_CLUSTER_SERVICE_NETWORK }}/{{ KUBE_CLUSTER_SERVICE_NETWORK_NETMASK }} \
   --service-node-port-range=30000-32767 \
   --tls-cert-file={{ PKI_DIR }}kube-api-server.pem \
   --tls-private-key-file={{ PKI_DIR }}kube-api-server-key.pem \
