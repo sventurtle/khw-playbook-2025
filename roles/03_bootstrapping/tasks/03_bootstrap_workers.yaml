@@ -13,13 +13,13 @@
 - name: configure networking; template bridge config
   template:
     src: 10-bridge.conf.j2
-    dest: /etc/cni/net.d/
+    dest: /etc/cni/net.d/10-bridge.conf
     mode: 0755
 
 - name: configure networking; template loopback config
   template:
     src: 99-loopback.conf.j2
-    dest: /etc/cni/net.d/
+    dest: /etc/cni/net.d/99-loopback.conf
     mode: 0755
 
 - name: enable ipv4 package crossing
