@@ -1,0 +1,15 @@
+- name: bind cluster role for kubectl
+  shell: kubectl create clusterrolebinding apiserver-kubelet-admin --user=kubernetes --clusterrole=system:kubelet-api-admin
+  ignore_errors: true
+
+- name: copy coreos yaml
+  template:
+    src: coredns.yaml.j2
+    dest: /tmp/coredns.yaml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: apply coreos yaml
+  command: kubectl apply -f /tmp/coredns.yaml
+  ignore_errors: true

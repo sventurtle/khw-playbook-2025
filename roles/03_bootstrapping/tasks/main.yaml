@@ -7,4 +7,5 @@
 - name: bootstrap workers
   include: 03_bootstrap_workers.yaml
 
-
+- name: after install
+  include: 04_afterinstall.yaml
